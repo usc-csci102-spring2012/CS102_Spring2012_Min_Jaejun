@@ -1,0 +1,344 @@
+Design Document
+
+JaeJun Min
+CSCI 102 DATA Structures
+Assignment 5 Making game with using QT
+Purpose/overview
+-	I will use game from hw3a and add pictures (GUI) using QT program.
+
+Requirements.
+-	This program need 3 movable characters and 2 immovable characters.
+- 	At least 2 of your "things" shoot back at you - wherever you are. That means they "figure out" where you are and shoot at your location. If you don't move, you'll get hit.
+-	At least 1 of your "things" follows you. At the highest level, perhaps they also move faster than you.
+-	Three (3) different screens - these may represent 3 worlds/levels, etc. This can be done with different backgrounds and different (or at least some different) "things". They are to look, and act, differently.
+- 	 12 types of things ( 12 different chracters)
+-	Need to display score screen with life of players and how many enemy are left.
+-	Using QT( NEED TO HAVE GUI).	
+Classes
+Types of Classes
+-	banana class (monkey is throwing banana)
+	- if hunter avoid banana, banana will drop on the ground ( different picture of banana will appear, and hunter can pick up banana on ground to get a points.
+- Boar class
+	- boar will run across screen horizontally, and if boar hits hunter, hunter will die.
+- shoot class
+	-hunter can shot gun to kill boar. If boar¡¯s HP goes down to 0, hunter will earn points.
+Two Items class
+	-Shoes class
+		- image of shoes will display on screen randomly and if hunter get this shoes, hunter¡¯s movement speed will increase.
+	- Superman class
+		- if hunter get this superman mark, hunter becomes invincible.
+Trap class
+-	Trap class will position on down left corner all the time. Trap will shoot fire ball to player¡¯s previous position, and if fireball hits hunter, hunter will die, and if hunter dodge it, fireball will just disappear from screen.
+Fireball class 
+-	Fireball comes out from trap and will chases hunter¡¯s previous position.
+-  monkey class(appears from top of screen and throw bananas to hunter(player)¡¯s previous position
+	-If hunter is not moving to other position hunter will die. 
+-Tiger class
+	- tiger will keep chasing player everytime.
+-Rabbit and turtle class 
+
+- CODE FOR GET PREVIOUS POSITION OF HUNTER AND SHOOT FIREBALL OR BANANA TO THAT POSITION
+	
+	- rabbit and turtle will randomly move around the screen. 
+-	MAIN CPP file
+-	void center(QWidget &widget)
+-	{
+-	  int x, y;
+-	  int screenWidth;
+-	  int screenHeight;
+-	
+-	  int WIDTH = 500;
+-	  int HEIGHT = 500;
+-	  
+-	
+-	  QDesktopWidget *desktop = QApplication::desktop();
+-	
+-	  screenWidth = desktop->width();
+-	  screenHeight = desktop->height();
+-	 
+-	  x = (screenWidth - WIDTH) / 2;
+-	  y = (screenHeight - HEIGHT) / 2;
+-	
+-	  widget.setGeometry(x, y, WIDTH, HEIGHT);
+-	  widget.setFixedSize(WIDTH, HEIGHT);
+-	}
+-	
+-	
+-	int main(int argc, char *argv[])
+-	{
+-	  QApplication app(argc, argv);  
+-	    
+-	  collision window;
+-	  
+-	  window.setWindowTitle("HUNT");
+-	  window.show();
+-	  center(window);
+-	
+-	  return app.exec();
+-	}
+
+QApplication and QDesktopWidget *desktop: it helps to make window boxes. 
+Set width and height to 500,500.
+
+-	Collision class
+o	It is major class that will print every object that I have and will check for collision between players and enemy.
+-	class collision: public QWidget
+-	
+-	{
+-		Q_OBJECT
+-	protected:
+-		void keyPressEvent(QKeyEvent *event);
+-		void paintEvent(QPaintEvent *event);
+-		void timerEvent(QTimerEvent *event);
+-		void start();
+-		void moverabbit();
+-		void pausegame();
+-		void quitgame();
+-		void Gameover();
+-		void victory();
+-		void checkcollision();
+-		void movetiger();
+-		void moveturtle();
+-	
+-	private:
+-		int x,y;
+-		int clock;
+-		int timerld;
+-		bool gameover;
+-		bool gamewon;
+-		bool started;
+-		bool paused;
+-		int rabcount;
+-		int turcount;
+-		player *hunter;
+-		Tig *tig;
+-		Turtle *turt[4];
+-		BOMB *bomb[6];
+-		
+-		Rabbit *rat[4];
+-		
+-	public:
+-		collision (QWidget *parent=0);
+-		~collision();
+
+This is how my collision class looks like.
+It is parent class of QWIDGET
+Use this class in my main.cpp to process my program.
+These are major parts of QT:
+void keyPressEvent(QKeyEvent *event);
+it helps to use keyboard interface, by using this library, I can use buttons from keyboard to control hunter.
+void paintEvent(QPaintEvent *event);
+It will print out image(picture) of charters.
+void timerEvent(QTimerEvent *event);
+It is like timeout from curses, use this to make auto movement.
+
+In this clss there is sub  class or child class that I will use.(class tiger, class bomb, class rabbit ,class hunter)
+class player
+{
+private:
+		QImage image;
+		QRect hunt;
+		bool destroyed;
+
+public:
+	player()
+	{
+
+	image.load("hunter.png");
+	hunt =image.rect();
+	initialposition();
+	destroyed =FALSE;
+	}
+
+	~player()
+		{			
+			std::cout << ("hunter deleted\n");
+		}
+	void initialposition()
+	{
+		hunt.moveTo(0,0);
+	}
+
+	void moveup(int x, int y)
+		{
+			if(hunt.top() <0)
+			{
+				y=499;
+			hunt.moveTop(y);
+			}
+			else
+				hunt.moveTo(x,y);
+				
+	}
+
+	void movedown(int x, int y)
+	{
+		if(hunt.bottom()>499)
+		{	y=0;
+			hunt.moveBottom(y);
+		}
+		else
+		hunt.moveTo(x,y);
+				
+	}
+
+	void moveleft(int x,int y)
+	{
+		if(hunt.left()<0)
+		{
+			x =499;
+			hunt.moveLeft(x);
+		}
+		else
+		hunt.moveTo(x,y);
+	}
+
+
+	void moveright(int x,int y)
+	{
+		if(hunt.right()>499)
+		{
+			x=0;
+			hunt.moveRight(x);
+		}
+		else
+			hunt.moveTo(x,y);
+	}
+
+	bool destoryplayer()
+	{
+		return destroyed;
+	}
+	void setdestoryed(bool dest)
+	{
+		destroyed =dest;
+	}
+
+	QImage & getImage()
+	{
+		return image;
+	}
+	QRect gethunt()
+	{
+		return hunt;
+	}
+This is player class ,which will control the movement of hunter, and get image of hunter.
+It will also check for collision with tiger or bomb and if player hits them. Game is over.
+class Turtle
+{
+private:
+	QImage image;
+	QRect turtle;
+	int xdir;
+	int ydir;
+	bool destroyed;
+public:
+	Turtle(int x, int y)
+	{
+		image.load("turtle.png");
+		turtle = image.rect();
+		destroyed =FALSE;
+		turtle.translate(x,y);
+	}
+	~Turtle()
+	{
+		std::cout<<("Turtle deleted\n");
+	}
+
+	bool isdestroyed()
+	{
+		return destroyed;
+	}
+
+	void setdestroyed(bool dest)
+	{
+		destroyed=dest;
+	}
+
+
+	void move(int x,int y)
+	{
+		
+			turtle.moveTo(x,y);
+	}
+	QRect getRect()
+	{
+		return turtle;
+	}
+
+	QImage & getImage()
+	{
+		return image;
+	}
+
+};
+
+This is turtle class and it is very similar to rabbit class, difference is turtle is slower and limited on their movement.
+
+QRect and QImage:
+These are also major QT that I have to use for my hw.
+QRect helps to get positions of characters and it makes easy to control character movement.
+QIMAGE: helps to get image on screen. 
+
+HIGH LEVEl Architecture
+	Since Tiger is following player, there are setters and getters for tiger.
+	In order to make tiger follows player.
+	You must calculate distance between tiger and player.
+For ex:
+	Dx =tiger_position_x ? playr_x.
+	Dy=tigery-playery
+	Once you calculate it, you must know which way tiger has to move.
+	if abs(dx) is greater than abs(dy) then you must move to horizontal.
+	It can be either negative or positive. You have to calculate this to find where to move.
+	If  tigerx > player x, it means tiger must move to negative side to catch player.
+Do same procedure to find movement on y axis. In this case it must be abs(dy)>abs(dx) first, and then you calculate for positive or negative.
+Tiger can also move to diagonal when dx is equal to dy.
+Then there is 4 directions and it is basically do same calculation with above. But little bit complicate.
+ 
+For rabbits and turtles
+-	It will display images of rabbit and turtles
+At first, they are just ramdomly display on screens. There are about 8 of them. 4 each.
+So, I just use for loop to display them. 
+Int x, y;
+	
+for (int I= 0; i< 6 ; i++)
+	{
+		X=rand()%col;
+		Y=rand())%row;
+
+		turt[j] = new turt(bx,by);
+
+	
+}
+
+This is brief example of display on screen by randomly selected position.
+I also use same method for bombs and rabbits as well.
+Qrect libraries is very often used to get position of characters.
+QImage is also used very often to get images of characters. 
+Characteristic of Rabbit and Turtle.
+-	They actually move up,down, right and left. They cannot move diagonal like tiger does.
+-	It is call rabbit and turtle because, rabbit move faster and hard to hunt. Turtle is slow and it is easier to catch.
+-	Use clock counter to make this happens.
+For Ex:
+	If(clock%()/2==0)
+It will control the movement of tiger in timerEvent(QTimerEvent *event)
+Since we are not using curses, instead of using timeout, we have to use function above.
+It will control the time of screen. It makes characters¡¯ auto movement.
+
+User Interface.
+	Player can move by using arrow button on keyboard. It works on keyPressEvent(QKeyEvent *event);
+it helps to use keyboard interface, by using this library, I can use buttons from keyboard to control hunter.
+Keyboard: space =start game
+	: p = paused
+	:arrows= for moving up,down,left, and right.
+	:q = quit game.		
+	:s =Hunter can shoot bullets.
+
+How to play this game:
+-	This game have 3 different level.
+In level 1, there aren¡¯t many rabbits and turtles to kill, but you also have to kill boar by shooting at him.  Tiger is chasing player but he is very slow and boar is also slow.
+As level goes up, there will be many rabbits and turtles to kill and boar and tiger speed will increase. 
+Player also have to avoid banana and fire which are throwing by monkey and trap.
+
+
+

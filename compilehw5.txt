@@ -1,0 +1,4 @@
+make .pro file: qmake -project make
+		qmake
+		make
+compile:./hw5
